@@ -2,7 +2,7 @@ class Movie {
   bool? adult;
   String? backdropPath;
   List<int>? genreIds;
-  int? id;
+  num? id;
   String? originalLanguage;
   String? originalTitle;
   String? overview;
@@ -11,8 +11,8 @@ class Movie {
   String? releaseDate;
   String? title;
   bool? video;
-  double? voteAverage;
-  int? voteCount;
+  num? voteAverage;
+  num? voteCount;
 
   Movie(
       {this.adult,

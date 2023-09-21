@@ -51,7 +51,7 @@ class _ContentScreenState extends State<ContentScreen> {
                     label: 'Movies',
                   ),
                   NavigationDestination(
-                    icon: Icon(Icons.favorite),
+                    icon: Icon(Icons.star_border),
                     label: 'Favourites',
                   ),
                 ],
