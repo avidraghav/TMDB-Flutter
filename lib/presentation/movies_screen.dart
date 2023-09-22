@@ -15,7 +15,9 @@ class MoviesScreen extends StatefulWidget {
 
 class _MoviesScreenState extends State<MoviesScreen> {
   late Future<PopularMovieResponse> moviesResponse;
-  final PageController _pageController = PageController(initialPage: 0);
+  final PageController pageController =
+      PageController(initialPage: 0, viewportFraction: 0.5);
+  double currentPage = 0;
 
   Dio configureDio() {
     final options = BaseOptions(
@@ -29,6 +31,11 @@ class _MoviesScreenState extends State<MoviesScreen> {
   @override
   void initState() {
     var dio = configureDio();
+    pageController.addListener(() {
+      setState(() {
+        currentPage = pageController.page ?? 0;
+      });
+    });
     MoviesScreenRepo repo = MoviesScreenRepo(dio: dio);
     moviesResponse = repo.getTrending(dio);
     super.initState();
@@ -37,34 +44,35 @@ class _MoviesScreenState extends State<MoviesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          children: [
-            const SafeArea(child: Text("Trending Movies")),
-            Flexible(
-              child: FutureBuilder<PopularMovieResponse>(
-                future: moviesResponse,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return PageView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: snapshot.data!.movies!.length,
-                      controller: _pageController,
-                      itemBuilder: (BuildContext context, int index) =>
-                          Padding(
-                            padding: const EdgeInsets.all(80.0),
-                            child: MovieItem(movie: snapshot.data!.movies![index]),
-                          ),
+      appBar: AppBar(title: const Center(child: Text("Trending Movies"))),
+      body: Padding(
+        padding: const EdgeInsets.only(top: 80.0,bottom: 80.0),
+        child: FutureBuilder<PopularMovieResponse>(
+          future: moviesResponse,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return PageView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: snapshot.data!.movies!.length,
+                  controller: pageController,
+                  itemBuilder: (BuildContext context, int index) {
+                    double scale = 1;
+                    double offset = currentPage - index;
+                    scale = (1 - (offset.abs() * .25)).clamp(0.8, 1.0);
+                    return Transform.scale(
+                      scale: scale,
+                      child: Center(
+                        child: MovieItem(
+                            movie: snapshot.data!.movies![index]),
+                      ),
                     );
-                  } else if (snapshot.hasError) {
-                    return Text('${snapshot.error}');
-                  }
-                  // By default, show a loading spinner.
-                  return const Center(child: CircularProgressIndicator());
-                },
-              ),
-            ),
-          ],
+                  });
+            } else if (snapshot.hasError) {
+              return Text('${snapshot.error}');
+            }
+            // By default, show a loading spinner.
+            return const Center(child: CircularProgressIndicator());
+          },
         ),
       ),
     );
@@ -78,12 +86,8 @@ class MovieItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 200,
-      height: 200,
-      child: Card(
-        child: Center(child: Text(movie.title.toString())),
-      ),
+    return Card(
+      child: Center(child: Text(movie.title.toString())),
     );
   }
 }
