@@ -31,7 +31,7 @@ class Movie {
       this.voteCount});
 
   Movie.fromJson(Map<String, dynamic> json) {
-    adult = json['adult'];
+    adult = json['adult'] == 1 ? true : false;
     backdropPath = json['backdrop_path'];
     genreIds = json['genre_ids'].cast<int>();
     id = json['id'];
@@ -42,14 +42,14 @@ class Movie {
     posterPath = json['poster_path'];
     releaseDate = json['release_date'];
     title = json['title'];
-    video = json['video'];
+    video = json['video'] == 1 ? true : false;
     voteAverage = json['vote_average'];
     voteCount = json['vote_count'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['adult'] = adult;
+    data['adult'] = adult == true ? 1 : 0;
     data['backdrop_path'] = backdropPath;
     data['genre_ids'] = genreIds;
     data['id'] = id;
