@@ -16,6 +16,5 @@ class MoviesScreenRepo {
     } else {
       throw Exception('Failed to fetch movies');
     }
-    // print(response);
   }
 }

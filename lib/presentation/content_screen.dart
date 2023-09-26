@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-
-import 'favourites_screen.dart';
-import 'movies_screen.dart';
+import 'package:tmdb_flutter/presentation/favourites_screen/favourites_screen.dart';
+import 'movies_screen/movies_screen.dart';
 
 class ContentScreen extends StatefulWidget {
   const ContentScreen({super.key});
@@ -17,6 +16,11 @@ class _ContentScreenState extends State<ContentScreen> {
     setState(() {
       selectedIndex = value;
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
   }
 
   @override

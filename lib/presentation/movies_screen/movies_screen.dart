@@ -1,23 +1,21 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:tmdb_flutter/data/database_helper.dart';
 import 'package:tmdb_flutter/domain/model/movie.dart';
 import 'package:tmdb_flutter/domain/model/popular_movie_response.dart';
 import 'package:tmdb_flutter/domain/repository/movies_screen_repo.dart';
+import 'package:tmdb_flutter/presentation/details_screen/details_screen.dart';
 
 class MoviesScreen extends StatefulWidget {
   const MoviesScreen({super.key});
-
-  //final MoviesScreenRepo repo;
 
   @override
   State<MoviesScreen> createState() => _MoviesScreenState();
 }
 
 class _MoviesScreenState extends State<MoviesScreen> {
-  late Database _database;
   List<Movie> movies = [];
   bool isLoading = true;
   String errorMessage = "";
@@ -37,7 +35,9 @@ class _MoviesScreenState extends State<MoviesScreen> {
 
   @override
   void initState() {
-    initializeDatabase();
+    DatabaseHelper().db.then((db) {
+      getMovies(db);
+    });
 
     pageController.addListener(() {
       setState(() {
@@ -47,51 +47,23 @@ class _MoviesScreenState extends State<MoviesScreen> {
     super.initState();
   }
 
-  Future<void> initializeDatabase() async {
-    final databasesPath = await getDatabasesPath();
-    final path = join(databasesPath, 'tmdb_flutter.db');
-
+  Future<void> getMovies(Database db) async {
     try {
-      // Open the database (or create if it doesn't exist)
-      _database = await openDatabase(path, version: 1,
-          onCreate: (Database db, int version) async {
-        // Create the table to store data
-        await db.execute(
-          'CREATE TABLE movies('
-          'id INTEGER PRIMARY KEY, '
-          'adult INTEGER, '
-          'backdrop_path TEXT, '
-          'genre_ids TEXT, '
-          'original_language TEXT, '
-          'original_title TEXT, '
-          'overview TEXT, '
-          'popularity REAL, '
-          'poster_path TEXT, '
-          'release_date TEXT, '
-          'title TEXT, '
-          'video INTEGER, '
-          'vote_average REAL, '
-          'vote_count INTEGER'
-          ')',
-        );
-      });
-
-      // Check for internet connectivity
       final hasInternet = await checkInternetConnectivity();
 
       if (hasInternet) {
         final data = await fetchDataFromNetwork();
 
-        await storeDataInDatabase(data.movies!);
+        await storeDataInDatabase(db, data.movies!);
 
-        List<Movie> cachedMovies = await getCachedMoviesFromDatabase();
+        List<Movie> cachedMovies = await getCachedMoviesFromDatabase(db);
 
         setState(() {
           movies = cachedMovies;
           isLoading = false;
         });
       } else {
-        final cachedMovies = await getCachedMoviesFromDatabase();
+        final cachedMovies = await getCachedMoviesFromDatabase(db);
 
         if (cachedMovies.isNotEmpty) {
           setState(() {
@@ -121,10 +93,10 @@ class _MoviesScreenState extends State<MoviesScreen> {
     return moviesResponse;
   }
 
-  Future<void> storeDataInDatabase(List<Movie> movies) async {
+  Future<void> storeDataInDatabase(Database db, List<Movie> movies) async {
     try {
       for (final movie in movies) {
-        await _database.insert('movies', movie.toJson(),
+        await db.insert('movies', movie.toJson(),
             conflictAlgorithm: ConflictAlgorithm.replace);
       }
     } catch (error) {
@@ -132,9 +104,9 @@ class _MoviesScreenState extends State<MoviesScreen> {
     }
   }
 
-  Future<List<Movie>> getCachedMoviesFromDatabase() async {
+  Future<List<Movie>> getCachedMoviesFromDatabase(Database db) async {
     try {
-      final List<Map<String, dynamic>> maps = await _database.query('movies');
+      final List<Map<String, dynamic>> maps = await db.query('movies');
       return List.generate(maps.length, (i) {
         return Movie.fromJson(maps[i]);
       });
@@ -193,8 +165,16 @@ class MovieItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Center(child: Text(movie.title.toString())),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => DetailsScreen(movie: movie)),
+        );
+      },
+      child: Card(
+        child: Center(child: Text(movie.title.toString())),
+      ),
     );
   }
 }
