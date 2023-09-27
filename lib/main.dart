@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tmdb_flutter/TmdbObserver.dart';
 import 'package:tmdb_flutter/presentation/on_boarding_screen.dart';
+import 'package:tmdb_flutter/presentation/settings_screen/SettingsScreenCubit.dart';
 
 void main() {
-  runApp(const MyApp());
+  Bloc.observer = TmdbObserver();
+  runApp(
+      BlocProvider(
+      create: (_) => SettingsScreenCubit(const SettingsScreenState()),
+      child: const MyApp())
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -11,21 +19,27 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+    return BlocBuilder<SettingsScreenCubit, SettingsScreenState>(
+      bloc: changeThemeCubit,
+      builder: (BuildContext context, SettingsScreenState state) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          darkTheme: ThemeData.dark(),
+          theme: ThemeData(
+            useMaterial3: true,
+          ),
+          themeMode: state.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+          home: const MyHomePage(),
+        );
+      },
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+  const MyHomePage({
+    super.key,
+  });
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();

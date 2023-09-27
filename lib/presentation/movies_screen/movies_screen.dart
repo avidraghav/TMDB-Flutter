@@ -1,12 +1,16 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:tmdb_flutter/data/database_helper.dart';
 import 'package:tmdb_flutter/domain/model/movie.dart';
 import 'package:tmdb_flutter/domain/model/popular_movie_response.dart';
 import 'package:tmdb_flutter/domain/repository/movies_screen_repo.dart';
+import 'package:tmdb_flutter/presentation/details_screen/DetailsScreenCubit.dart';
 import 'package:tmdb_flutter/presentation/details_screen/details_screen.dart';
+import 'package:tmdb_flutter/presentation/settings_screen/SettingsScreenCubit.dart';
+import 'package:tmdb_flutter/presentation/settings_screen/settings_screen.dart';
 
 class MoviesScreen extends StatefulWidget {
   const MoviesScreen({super.key});
@@ -130,7 +134,26 @@ class _MoviesScreenState extends State<MoviesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Center(child: Text("Trending Movies"))),
+      appBar: AppBar(
+        title: const Center(child: Text("Trending Movies")),
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.settings,
+            ),
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => BlocProvider(
+                        create: (_) =>
+                            SettingsScreenCubit(const SettingsScreenState()),
+                        child: const SettingsScreen()),
+                  ));
+            },
+          )
+        ],
+      ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : errorMessage.isNotEmpty
@@ -168,9 +191,13 @@ class MovieItem extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => DetailsScreen(movie: movie)),
-        );
+            context,
+            MaterialPageRoute(
+              builder: (context) => BlocProvider(
+                  create: (_) =>
+                      DetailsScreenCubit(DetailsScreenState(movie: movie)),
+                  child: DetailsScreen(movie: movie)),
+            ));
       },
       child: Card(
         child: Center(child: Text(movie.title.toString())),
