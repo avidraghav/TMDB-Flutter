@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:tmdb_flutter/presentation/auth_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tmdb_flutter/presentation/auth_screen/auth_screen.dart';
+import 'package:tmdb_flutter/presentation/auth_screen/auth_screen_cubit.dart';
 
 class OnBoardingScreen extends StatefulWidget {
   const OnBoardingScreen({
@@ -25,9 +27,11 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
       });
     } else {
       Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const AuthScreen()),
-      );
+          context,
+          MaterialPageRoute(
+              builder: (context) => BlocProvider(
+                  create: (_) => AuthScreenCubit(const AuthScreenState()),
+                  child: const AuthScreen())));
     }
   }
 

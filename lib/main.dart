@@ -1,16 +1,19 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tmdb_flutter/TmdbObserver.dart';
 import 'package:tmdb_flutter/presentation/on_boarding_screen.dart';
 import 'package:tmdb_flutter/presentation/settings_screen/SettingsScreenCubit.dart';
 
-void main() {
+import 'firebase_options.dart';
+
+Future<void> main() async {
   Bloc.observer = TmdbObserver();
-  runApp(
-      BlocProvider(
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  runApp(BlocProvider(
       create: (_) => SettingsScreenCubit(const SettingsScreenState()),
-      child: const MyApp())
-  );
+      child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -20,7 +23,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SettingsScreenCubit, SettingsScreenState>(
-      bloc: changeThemeCubit,
       builder: (BuildContext context, SettingsScreenState state) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,

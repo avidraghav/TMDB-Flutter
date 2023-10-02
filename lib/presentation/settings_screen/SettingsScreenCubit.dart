@@ -1,14 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-SettingsScreenCubit changeThemeCubit =
-    SettingsScreenCubit(const SettingsScreenState(isDarkMode: true));
-
 class SettingsScreenCubit extends Cubit<SettingsScreenState> {
   SettingsScreenCubit(SettingsScreenState initialState) : super(initialState);
 
   void toggleTheme() {
     emit(state.copyWith(isDarkMode: !state.isDarkMode));
-    print("toggled");
   }
 }
 
