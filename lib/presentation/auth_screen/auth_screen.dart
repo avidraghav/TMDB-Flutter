@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tmdb_flutter/data/shared_prefs_helper.dart';
 import 'package:tmdb_flutter/presentation/auth_screen/auth_screen_cubit.dart';
 import 'package:tmdb_flutter/presentation/auth_screen/auth_screen_vm.dart';
-
 import '../content_screen.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -85,7 +85,10 @@ class _AuthScreenState extends State<AuthScreen> {
                                 password: state.password!)
                             .then((user) {
                           if (user != null) {
+                            print("success");
                             context.read<AuthScreenCubit>().setIsLoading(false);
+                            SharedPreferencesHelper.instance.setBool("isUserLoggedIn", true);
+                            SharedPreferencesHelper.instance.getBool("isUserLoggedIn").then((value) => print("status updated: $value"));
                             Navigator.pushAndRemoveUntil(
                                 context,
                                 MaterialPageRoute(
@@ -93,7 +96,10 @@ class _AuthScreenState extends State<AuthScreen> {
                                         const ContentScreen()),
                                 (Route<dynamic> route) => false);
                           } else {
+                            print("fail");
                             context.read<AuthScreenCubit>().setIsLoading(false);
+                            SharedPreferencesHelper.instance.setBool("isUserLoggedIn", false);
+                            //ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("error")));
                           }
                         });
                       }

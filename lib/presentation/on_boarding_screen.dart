@@ -31,7 +31,8 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
           MaterialPageRoute(
               builder: (context) => BlocProvider(
                   create: (_) => AuthScreenCubit(const AuthScreenState()),
-                  child: const AuthScreen())));
+                  child: const AuthScreen()))
+      );
     }
   }
 

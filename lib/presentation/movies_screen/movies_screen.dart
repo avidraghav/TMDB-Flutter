@@ -9,8 +9,11 @@ import 'package:tmdb_flutter/domain/model/popular_movie_response.dart';
 import 'package:tmdb_flutter/domain/repository/movies_screen_repo.dart';
 import 'package:tmdb_flutter/presentation/details_screen/DetailsScreenCubit.dart';
 import 'package:tmdb_flutter/presentation/details_screen/details_screen.dart';
-import 'package:tmdb_flutter/presentation/settings_screen/SettingsScreenCubit.dart';
 import 'package:tmdb_flutter/presentation/settings_screen/settings_screen.dart';
+
+import '../../auth_state_cubit.dart';
+import '../../data/shared_prefs_helper.dart';
+import '../../theme_cubit.dart';
 
 class MoviesScreen extends StatefulWidget {
   const MoviesScreen({super.key});
@@ -23,6 +26,8 @@ class _MoviesScreenState extends State<MoviesScreen> {
   List<Movie> movies = [];
   bool isLoading = true;
   String errorMessage = "";
+  late bool isUserLoggedIn;
+  late bool isDarkTheme;
 
   final PageController pageController =
       PageController(initialPage: 0, viewportFraction: 0.5);
@@ -47,6 +52,13 @@ class _MoviesScreenState extends State<MoviesScreen> {
       setState(() {
         currentPage = pageController.page ?? 0;
       });
+    });
+
+    SharedPreferencesHelper.instance.getBool("isUserLoggedIn").then((value) {
+      isUserLoggedIn = value;
+    });
+    SharedPreferencesHelper.instance.getBool("isDarkTheme").then((value) {
+      isDarkTheme = value;
     });
     super.initState();
   }
@@ -145,10 +157,16 @@ class _MoviesScreenState extends State<MoviesScreen> {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => BlocProvider(
-                        create: (_) =>
-                            SettingsScreenCubit(const SettingsScreenState()),
-                        child: const SettingsScreen()),
+                    builder: (context) => MultiBlocProvider(providers: [
+                      BlocProvider(
+                        create: (BuildContext context) =>
+                            AuthStateCubit(isUserLoggedIn),
+                      ),
+                      BlocProvider(
+                        create: (BuildContext context) =>
+                            ThemeCubit(isDarkTheme),
+                      ),
+                    ], child: const SettingsScreen()),
                   ));
             },
           )

@@ -1,59 +1,62 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tmdb_flutter/TmdbObserver.dart';
+import 'package:tmdb_flutter/data/shared_prefs_helper.dart';
+import 'package:tmdb_flutter/presentation/content_screen.dart';
 import 'package:tmdb_flutter/presentation/on_boarding_screen.dart';
-import 'package:tmdb_flutter/presentation/settings_screen/SettingsScreenCubit.dart';
-
+import 'package:tmdb_flutter/theme_cubit.dart';
+import 'package:tmdb_flutter/tmdb_observer.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
   Bloc.observer = TmdbObserver();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  final loginStatus =
+      await SharedPreferencesHelper.instance.getBool("isUserLoggedIn");
+  final isDarkTheme =
+      await SharedPreferencesHelper.instance.getBool("isDarkTheme");
   runApp(BlocProvider(
-      create: (_) => SettingsScreenCubit(const SettingsScreenState()),
-      child: const MyApp()));
+      create: (_) => ThemeCubit(isDarkTheme),
+      child: MyApp(isUserLoggedIn: loginStatus)));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool isUserLoggedIn;
 
-  // This widget is the root of your application.
+  const MyApp({
+    super.key,
+    required this.isUserLoggedIn,
+  });
+
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SettingsScreenCubit, SettingsScreenState>(
-      builder: (BuildContext context, SettingsScreenState state) {
+    // read ThemeCubit
+    return BlocBuilder<ThemeCubit, bool>(
+      builder: (context, isDarkTheme) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           darkTheme: ThemeData.dark(),
           theme: ThemeData(
             useMaterial3: true,
           ),
-          themeMode: state.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-          home: const MyHomePage(),
+          themeMode: isDarkTheme ? ThemeMode.dark : ThemeMode.light,
+          home: MyHomePage(isUserLoggedIn: isUserLoggedIn),
         );
       },
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({
-    super.key,
-  });
+class MyHomePage extends StatelessWidget {
+  final bool isUserLoggedIn;
 
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
+  const MyHomePage({super.key, required this.isUserLoggedIn});
 
-class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: OnBoardingScreen(),
-      ),
+    return Scaffold(
+      body: isUserLoggedIn ? const ContentScreen() : const OnBoardingScreen(),
     );
   }
 }

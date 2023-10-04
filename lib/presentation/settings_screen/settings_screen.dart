@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tmdb_flutter/presentation/settings_screen/SettingsScreenCubit.dart';
+import 'package:tmdb_flutter/auth_state_cubit.dart';
+import 'package:tmdb_flutter/presentation/auth_screen/auth_screen.dart';
+import 'package:tmdb_flutter/theme_cubit.dart';
+import '../auth_screen/auth_screen_cubit.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -24,28 +27,42 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
       body: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: BlocBuilder<SettingsScreenCubit, SettingsScreenState>(
-              builder: (context, state) {
-            return Column(
-              children: [
-                ColumnItem(
+          child: Column(
+            children: [
+              BlocBuilder<ThemeCubit, bool>(builder: (context, state) {
+                return ColumnItem(
                     leadIcon: Icons.shield_moon,
                     text1: "Theme",
                     text2: "Dark Mode",
                     trailing: Switch(
                       onChanged: (bool value) {
-                        context.read<SettingsScreenCubit>().toggleTheme();
+                        context.read<ThemeCubit>().toggleTheme();
                       },
-                      value: state.isDarkMode,
-                    )),
-                const ColumnItem(
-                    leadIcon: Icons.supervised_user_circle_outlined,
-                    text1: "Account",
-                    text2: "Sign Out",
-                    trailing: Icon(Icons.arrow_forward))
-              ],
-            );
-          })),
+                      value: state,
+                    ));
+              }),
+              BlocBuilder<AuthStateCubit, bool>(builder: (context, state) {
+                return ColumnItem(
+                  leadIcon: Icons.supervised_user_circle_outlined,
+                  text1: "Account",
+                  text2: "Sign Out",
+                  trailing: IconButton(
+                      onPressed: () {
+                        context.read<AuthStateCubit>().logoutUser();
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => BlocProvider(
+                                    create: (_) => AuthScreenCubit(
+                                        const AuthScreenState()),
+                                    child: const AuthScreen())),
+                            (route) => false);
+                      },
+                      icon: const Icon(Icons.arrow_forward)),
+                );
+              }),
+            ],
+          )),
     );
   }
 }

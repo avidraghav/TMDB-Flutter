@@ -17,13 +17,11 @@ class AuthScreenCubit extends Cubit<AuthScreenState> {
 }
 
 class AuthScreenState {
-  final bool isUserLoggedIn;
   final String? email;
   final String? password;
   final bool isLoading;
 
   const AuthScreenState({
-    this.isUserLoggedIn = false,
     this.email,
     this.password,
     this.isLoading = false,
@@ -34,31 +32,27 @@ class AuthScreenState {
       identical(this, other) ||
       (other is AuthScreenState &&
           runtimeType == other.runtimeType &&
-          isUserLoggedIn == other.isUserLoggedIn &&
           email == other.email &&
           password == other.password &&
           isLoading == other.isLoading);
 
   @override
   int get hashCode =>
-      isUserLoggedIn.hashCode ^
       email.hashCode ^
       password.hashCode ^
       isLoading.hashCode;
 
   @override
   String toString() {
-    return 'AuthScreenState{ isUserLoggedIn: $isUserLoggedIn, email: $email, password: $password, isLoading: $isLoading,}';
+    return 'AuthScreenState{ email: $email, password: $password, isLoading: $isLoading,}';
   }
 
   AuthScreenState copyWith({
-    bool? isUserLoggedIn,
     String? email,
     String? password,
     bool? isLoading,
   }) {
     return AuthScreenState(
-      isUserLoggedIn: isUserLoggedIn ?? this.isUserLoggedIn,
       email: email ?? this.email,
       password: password ?? this.password,
       isLoading: isLoading ?? this.isLoading,
@@ -67,7 +61,6 @@ class AuthScreenState {
 
   Map<String, dynamic> toMap() {
     return {
-      'isUserLoggedIn': isUserLoggedIn,
       'email': email,
       'password': password,
       'isLoading': isLoading,
@@ -76,7 +69,6 @@ class AuthScreenState {
 
   factory AuthScreenState.fromMap(Map<String, dynamic> map) {
     return AuthScreenState(
-      isUserLoggedIn: map['isUserLoggedIn'] as bool,
       email: map['email'] as String,
       password: map['password'] as String,
       isLoading: map['isLoading'] as bool,
