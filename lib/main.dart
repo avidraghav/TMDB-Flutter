@@ -16,34 +16,34 @@ Future<void> main() async {
       await SharedPreferencesHelper.instance.getBool("isUserLoggedIn");
   final isDarkTheme =
       await SharedPreferencesHelper.instance.getBool("isDarkTheme");
-  runApp(BlocProvider(
-      create: (_) => ThemeCubit(isDarkTheme),
-      child: MyApp(isUserLoggedIn: loginStatus)));
+  runApp(MyApp(isUserLoggedIn: loginStatus, isDarkTheme: isDarkTheme));
 }
 
 class MyApp extends StatelessWidget {
   final bool isUserLoggedIn;
+  final bool isDarkTheme;
 
   const MyApp({
     super.key,
     required this.isUserLoggedIn,
+    required this.isDarkTheme,
   });
 
   @override
   Widget build(BuildContext context) {
-    // read ThemeCubit
-    return BlocBuilder<ThemeCubit, bool>(
-      builder: (context, isDarkTheme) {
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          darkTheme: ThemeData.dark(),
-          theme: ThemeData(
-            useMaterial3: true,
-          ),
-          themeMode: isDarkTheme ? ThemeMode.dark : ThemeMode.light,
-          home: MyHomePage(isUserLoggedIn: isUserLoggedIn),
-        );
-      },
+    return BlocProvider(
+      create: (_) => ThemeCubit(isDarkTheme),
+      child: BlocBuilder<ThemeCubit, bool>(
+        builder: (context, isDarkTheme) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            darkTheme: ThemeData.dark(),
+            theme: isDarkTheme ? ThemeData.dark() : ThemeData.light(),
+            // themeMode: isDarkTheme ? ThemeMode.dark : ThemeMode.light,
+            home: MyHomePage(isUserLoggedIn: isUserLoggedIn),
+          );
+        },
+      ),
     );
   }
 }
