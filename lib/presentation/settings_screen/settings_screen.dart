@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:tmdb_flutter/auth_state_cubit.dart';
-import 'package:tmdb_flutter/presentation/auth_screen/auth_screen.dart';
 import 'package:tmdb_flutter/theme_cubit.dart';
-import '../auth_screen/auth_screen_cubit.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -49,14 +48,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   trailing: IconButton(
                       onPressed: () {
                         context.read<AuthStateCubit>().logoutUser();
-                        Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => BlocProvider(
-                                    create: (_) => AuthScreenCubit(
-                                        const AuthScreenState()),
-                                    child: const AuthScreen())),
-                            (route) => false);
+                        context.go("/home_page/auth_screen");
+                        // Navigator.pushAndRemoveUntil(
+                        //     context,
+                        //     MaterialPageRoute(
+                        //         builder: (context) => BlocProvider(
+                        //             create: (_) => AuthScreenCubit(
+                        //                 const AuthScreenState()),
+                        //             child: const AuthScreen())),
+                        //     (route) => false);
                       },
                       icon: const Icon(Icons.arrow_forward)),
                 );

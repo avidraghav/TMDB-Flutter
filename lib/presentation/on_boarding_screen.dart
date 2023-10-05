@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tmdb_flutter/presentation/auth_screen/auth_screen.dart';
-import 'package:tmdb_flutter/presentation/auth_screen/auth_screen_cubit.dart';
+import 'package:go_router/go_router.dart';
 
 class OnBoardingScreen extends StatefulWidget {
   const OnBoardingScreen({
@@ -26,13 +24,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
         currentPage++;
       });
     } else {
-      Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-              builder: (context) => BlocProvider(
-                  create: (_) => AuthScreenCubit(const AuthScreenState()),
-                  child: const AuthScreen()))
-      );
+      context.go('/home_page/auth_screen');
     }
   }
 

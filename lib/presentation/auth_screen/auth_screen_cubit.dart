@@ -37,10 +37,7 @@ class AuthScreenState {
           isLoading == other.isLoading);
 
   @override
-  int get hashCode =>
-      email.hashCode ^
-      password.hashCode ^
-      isLoading.hashCode;
+  int get hashCode => email.hashCode ^ password.hashCode ^ isLoading.hashCode;
 
   @override
   String toString() {
