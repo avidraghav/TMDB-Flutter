@@ -1,10 +1,16 @@
+import 'package:injectable/injectable.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
-class DatabaseHelper {
+import '../domain/database_helper.dart';
+
+@Named("prod")
+@Singleton(as: DatabaseHelper)
+class DatabaseHelperImpl extends DatabaseHelper {
   static Future<Database>? _database;
   static const String _databaseName = 'tmdb_flutter.db';
 
+  @override
   Future<Database> get db async {
     if (_database != null) {
       return _database!;
@@ -13,6 +19,7 @@ class DatabaseHelper {
     return _database!;
   }
 
+  @override
   Future<Database> initDatabase() async {
     final databasesPath = await getDatabasesPath();
     final path = join(databasesPath, _databaseName);

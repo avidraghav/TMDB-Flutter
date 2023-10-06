@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tmdb_flutter/auth_state_cubit.dart';
 import 'package:tmdb_flutter/data/shared_prefs_helper.dart';
+import 'package:tmdb_flutter/domain/database_helper.dart';
+import 'package:tmdb_flutter/main.dart';
 import 'package:tmdb_flutter/presentation/favourites_screen/favourites_screen_vm.dart';
 import 'package:tmdb_flutter/theme_cubit.dart';
-import '../../data/database_helper.dart';
+
 import '../../domain/model/movie.dart';
 import '../settings_screen/settings_screen.dart';
 
@@ -23,7 +25,8 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
 
   @override
   void initState() {
-    DatabaseHelper().db.then((db) {
+
+    getIt<DatabaseHelper>(instanceName: 'prod').db.then((db) {
       viewModel = FavouritesScreenVM(db);
     }).then((value) => {
           viewModel.getFavourites().then((favs) {

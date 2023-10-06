@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tmdb_flutter/data/shared_prefs_helper.dart';
 import 'package:tmdb_flutter/presentation/auth_screen/auth_screen.dart';
@@ -10,11 +11,17 @@ import 'package:tmdb_flutter/presentation/on_boarding_screen.dart';
 import 'package:tmdb_flutter/theme_cubit.dart';
 import 'package:tmdb_flutter/tmdb_observer.dart';
 
+import 'dependencies_config.dart';
 import 'firebase_options.dart';
 
+GetIt getIt = GetIt.instance;
+
 Future<void> main() async {
+  configureDependencies();
+  // getIt.registerSingleton<DatabaseHelper>(DatabaseHelperImpl());
   Bloc.observer = TmdbObserver();
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   final isDarkTheme =
       await SharedPreferencesHelper.instance.getBool("isDarkTheme");

@@ -49,14 +49,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       onPressed: () {
                         context.read<AuthStateCubit>().logoutUser();
                         context.go("/home_page/auth_screen");
-                        // Navigator.pushAndRemoveUntil(
-                        //     context,
-                        //     MaterialPageRoute(
-                        //         builder: (context) => BlocProvider(
-                        //             create: (_) => AuthScreenCubit(
-                        //                 const AuthScreenState()),
-                        //             child: const AuthScreen())),
-                        //     (route) => false);
                       },
                       icon: const Icon(Icons.arrow_forward)),
                 );

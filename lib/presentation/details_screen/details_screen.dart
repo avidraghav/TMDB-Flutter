@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tmdb_flutter/data/database_helper.dart';
+import 'package:tmdb_flutter/data/database_helper_impl.dart';
 import 'package:tmdb_flutter/domain/model/movie.dart';
 import 'package:tmdb_flutter/presentation/details_screen/DetailsScreenCubit.dart';
 import 'package:tmdb_flutter/presentation/details_screen/details_screen_vm.dart';
@@ -22,7 +22,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
 
   @override
   void initState() {
-    DatabaseHelper().db.then((db) {
+    DatabaseHelperImpl().db.then((db) {
       viewModel = DetailsScreenVM(db);
     });
     super.initState();

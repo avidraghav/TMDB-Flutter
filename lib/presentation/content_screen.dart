@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tmdb_flutter/presentation/favourites_screen/favourites_screen.dart';
+import 'package:tmdb_flutter/presentation/movies_screen/movies_screen_cubit.dart';
 import 'movies_screen/movies_screen.dart';
 
 class ContentScreen extends StatefulWidget {
@@ -28,7 +30,10 @@ class _ContentScreenState extends State<ContentScreen> {
     Widget page;
     switch (selectedIndex) {
       case 0:
-        page = const MoviesScreen();
+        page =  BlocProvider(
+          create: (BuildContext context) => MoviesScreenCubit(),
+          child: const MoviesScreen(),
+        );
         break;
       case 1:
         page = const FavouritesScreen();
